@@ -7,6 +7,7 @@ import no.fint.model.resource.utdanning.elev.ElevResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,10 +24,12 @@ public class DataTesterService {
 
     private final ElevCacheService elevCacheService;
     private final ResourceGenerator resourceGenerator;
+    private List<ElevResource> elevResources;
 
     public DataTesterService(ElevCacheService elevCacheService, ResourceGenerator resourceGenerator) {
         this.elevCacheService = elevCacheService;
         this.resourceGenerator = resourceGenerator;
+        elevResources = new ArrayList<>();
     }
 
     @PostConstruct
@@ -36,9 +39,42 @@ public class DataTesterService {
 
         logMemoryUsage();
         populateCache(populateCount);
+        copyElevData();
         logMemoryUsage();
 
         timeElementNotFound();
+        checkForManipulationOfData();
+    }
+
+    public void copyElevData() {
+        elevResources = elevCacheService.getCache(ORG_ID).get().stream().map(CacheObject::getObject).toList();
+    }
+
+    // To check if we manipulate any data after running methods from FintCache
+    public void checkForManipulationOfData() {
+        if (!isDataManipulated()) {
+            log.info("Data was not changed");
+        } else {
+            throw new IllegalArgumentException("Data has been manipulated");
+        }
+    }
+
+    public boolean isDataManipulated() {
+        List<ElevResource> fromCache = elevCacheService.getCache(ORG_ID).get().stream().map(CacheObject::getObject).toList();
+        if (fromCache.size() != elevResources.size()) return true;
+        log.info("done 1");
+
+        for (var elevResource : fromCache) {
+            if (!elevResources.contains(elevResource)) return true;
+        }
+        log.info("done 2");
+
+        for (var elevResource : elevResources) {
+            if (!fromCache.contains(elevResource)) return true;
+        }
+        log.info("done 3");
+
+        return false;
     }
 
     public void logMemoryUsage() {
