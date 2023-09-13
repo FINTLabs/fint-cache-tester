@@ -4,7 +4,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-elev-data
+elev-data.*
 
 ### STS ###
 .apt_generated
