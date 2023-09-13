@@ -34,8 +34,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation "no.fint:fint-utdanning-resource-model-java:${apiVersion}"
 
-    implementation 'com.fasterxml.jackson.core:jackson-dataformat-xml:2.14.2'
-
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.89.Final:osx-aarch_64'
 
