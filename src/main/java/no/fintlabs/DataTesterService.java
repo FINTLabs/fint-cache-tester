@@ -42,7 +42,7 @@ public class DataTesterService {
         copyElevData();
         logMemoryUsage();
 
-        timeElementNotFound();
+        timeElementNotFound(10);
         checkForManipulationOfData();
     }
 
@@ -62,17 +62,14 @@ public class DataTesterService {
     public boolean isDataManipulated() {
         List<ElevResource> fromCache = elevCacheService.getCache(ORG_ID).get().stream().map(CacheObject::getObject).toList();
         if (fromCache.size() != elevResources.size()) return true;
-        log.info("done 1");
 
         for (var elevResource : fromCache) {
             if (!elevResources.contains(elevResource)) return true;
         }
-        log.info("done 2");
 
         for (var elevResource : elevResources) {
             if (!fromCache.contains(elevResource)) return true;
         }
-        log.info("done 3");
 
         return false;
     }
@@ -98,15 +95,15 @@ public class DataTesterService {
         }
     }
 
-    public void timeElementNotFound() {
+    public void timeElementNotFound(int failFilterCount) {
         long startTime = System.nanoTime();
 
-        failFilter(1);
+        failFilter(failFilterCount);
 
         long timeElapsed = System.nanoTime() - startTime;
         double elapsedTimeInSeconds = (double) timeElapsed / 1_000_000_000.0;
 
-        log.info("Time elapsed: " + String.format("%.4f", elapsedTimeInSeconds) + " seconds");
+        log.info("Time elapsed for " + failFilterCount+ " searchs: " + String.format("%.4f", elapsedTimeInSeconds) + " seconds");
     }
 
 
