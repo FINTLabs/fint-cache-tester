@@ -3,7 +3,9 @@ package no.fintlabs;
 import no.fint.cache.annotations.EnableFintCache;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @EnableFintCache
 @SpringBootApplication
 public class Application {
