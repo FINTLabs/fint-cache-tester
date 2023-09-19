@@ -6,7 +6,7 @@ import no.fint.model.felles.kompleksedatatyper.Identifikator;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import no.fint.cache.model.CacheObjectType;
+import no.fint.cache.model.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 public class DataTesterService {
 
-    private static final String ORG_ID = "fintlabs.no";
+    public static final String ORG_ID = "fintlabs.no";
     private static final int POPULATE_COUNT = 5;
     private static final int FAIL_FILTER_COUNT = 0;
 
@@ -26,7 +26,6 @@ public class DataTesterService {
     public DataTesterService(ElevCacheService elevCacheService, ResourceGenerator resourceGenerator) {
         this.elevCacheService = elevCacheService;
         this.resourceGenerator = resourceGenerator;
-
         elevCacheService.createCache(ORG_ID);
     }
 
@@ -48,6 +47,7 @@ public class DataTesterService {
 
         timeElementNotFound(FAIL_FILTER_COUNT);
         checkForManipulationOfData();
+        elevCacheService.checkLastUpdated();
     }
 
     // To check if we manipulate any data after running methods from FintCache
