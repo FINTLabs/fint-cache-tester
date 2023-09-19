@@ -33,9 +33,9 @@ public class ElevCacheService extends CacheService<ElevResource> {
                 .collect(Collectors.toList());
 
         if (updatedTimestamps.size() == 0) {
-            log.info("Ingen elementer i cachet har fått ny last-updated");
+            log.info("No elements in cache has new last-updated");
         } else {
-            log.info(updatedTimestamps.size() + " elementer har nyere last-updated");
+            log.info(updatedTimestamps.size() + " elements has newer last-updated");
             lastUpdated = Collections.max(updatedTimestamps);
         }
     }

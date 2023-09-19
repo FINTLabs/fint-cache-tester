@@ -25,6 +25,6 @@ public class Util {
         long usedMemory = totalMemory - freeMemory;
         double usedMemoryInMB = (double) usedMemory / (1024 * 1024);
 
-        log.info("Memory usage: {}MB", String.format("%.2f", usedMemoryInMB));
+        log.info("Memory usage: {}MB", String.format("%.1f", usedMemoryInMB));
     }
 }

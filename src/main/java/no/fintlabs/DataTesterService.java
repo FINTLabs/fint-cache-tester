@@ -17,7 +17,7 @@ public class DataTesterService {
 
     public static final String ORG_ID = "fintlabs.no";
     private static final int POPULATE_COUNT = 5;
-    private static final int FAIL_FILTER_COUNT = 0;
+    private static final int FAIL_FILTER_COUNT = 1;
 
     private final ElevCacheService elevCacheService;
     private final ResourceGenerator resourceGenerator;
@@ -31,29 +31,33 @@ public class DataTesterService {
 
     @Scheduled(initialDelay = 3000, fixedDelay = 5000)
     public void check() {
+        long startTime = System.nanoTime();
         log.info("### Run check ###");
 
-        Util.logMemoryUsage();
-
         if (firstRun) {
+            Util.logMemoryUsage();
             log.info("Generating data");
             resourceGenerator.generateData(POPULATE_COUNT);
             firstRun = false;
         }
 
         addToCache(resourceGenerator.getList());
-
         Util.logMemoryUsage();
 
         timeElementNotFound(FAIL_FILTER_COUNT);
         checkForManipulationOfData();
         elevCacheService.checkLastUpdated();
+
+        long timeElapsed = System.nanoTime() - startTime;
+        double elapsedTimeInSeconds = (double) timeElapsed / 1_000_000_000.0;
+
+        log.info("Total run time: " + String.format("%.1f", elapsedTimeInSeconds) + " seconds");
     }
 
     // To check if we manipulate any data after running methods from FintCache
     public void checkForManipulationOfData() {
         if (!isDataManipulated()) {
-            log.info("Data was not changed");
+            log.info("Cache data consistent with master data");
         } else {
             throw new IllegalArgumentException("Data has been manipulated");
         }
@@ -95,11 +99,11 @@ public class DataTesterService {
         long timeElapsed = System.nanoTime() - startTime;
         double elapsedTimeInSeconds = (double) timeElapsed / 1_000_000_000.0;
 
-        log.info("Time elapsed for " + failFilterCount + " searchs: " + String.format("%.4f", elapsedTimeInSeconds) + " seconds");
+        log.info("Time elapsed for " + failFilterCount + " searchs: " + String.format("%.3f", elapsedTimeInSeconds) + " seconds");
     }
 
     public void addToCache(List<CacheObject<ElevResource>> resouces) {
         elevCacheService.updateCache(ORG_ID, resouces);
-        log.info("Added {} elements, cache size: {}", resouces.size(), elevCacheService.getCacheSize(ORG_ID));
+        log.info("Elements added: {} (New cache size: {})", resouces.size(), elevCacheService.getCacheSize(ORG_ID));
     }
 }
